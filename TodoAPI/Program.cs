@@ -5,8 +5,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddDbContext<TodoContext>(opt =>
-    opt.UseInMemoryDatabase("TodoList"));
+builder.Services.AddDbContext<TodoContext>(options => {
+
+    options.UseMySQL(builder.Configuration.GetConnectionString("TodoContext"));
+
+});
 
 
 builder.Services.AddControllers();

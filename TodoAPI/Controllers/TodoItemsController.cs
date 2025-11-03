@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.InteropServices;
+using TodoAPI.Dtos;
 using TodoAPI.Models;
+using ZstdSharp.Unsafe;
 
 namespace TodoApi.Controllers;
 
@@ -19,9 +22,40 @@ public class TodoItemsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
     {
-        return await _context.TodoItems
+        /*
+         return await _context.TodoItems
             .Select(x => ItemToDTO(x))
             .ToListAsync();
+        */
+
+        
+        return await _context.TodoItems
+            .Select
+            (x =>
+                new TodoItemDTO
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    IsComplete = x.IsComplete,
+                    Priority = x.Priority != null ? x.Priority.Name : null,
+                    Category = x.Category != null ? x.Category.Name : null
+                }
+            ).ToListAsync();
+        
+
+        /*
+        return await _context.TodoItems
+            .Select
+            (x => 
+                new
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    IsComplete = x.IsComplete,
+                    Priority = x.Priority != null ? x.Priority.Name : null
+                }
+            ).ToListAsync();
+        */
     }
 
     // GET: api/TodoItems/5
@@ -29,7 +63,7 @@ public class TodoItemsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<TodoItemDTO>> GetTodoItem(long id)
     {
-        var todoItem = await _context.TodoItems.FindAsync(id);
+        var todoItem = await _context.TodoItems.Include(x => x.Priority).Include(x => x.Category).FirstOrDefaultAsync(x => x.Id == id);
 
         if (todoItem == null)
         {
@@ -121,6 +155,8 @@ public class TodoItemsController : ControllerBase
        {
            Id = todoItem.Id,
            Name = todoItem.Name,
-           IsComplete = todoItem.IsComplete
+           IsComplete = todoItem.IsComplete,
+           Priority = todoItem.Priority != null ? todoItem.Priority.Name : null,
+           Category = todoItem.Category != null ? todoItem.Category.Name : null
        };
 }

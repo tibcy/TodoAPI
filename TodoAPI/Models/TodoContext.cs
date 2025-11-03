@@ -11,5 +11,7 @@ namespace TodoAPI.Models
         }
 
         public DbSet<TodoItem> TodoItems { get; set; } = null!;
+        public DbSet<Priority> Priorities { get; set; } = null!;
+        public DbSet<Category> Categories { get; set; } = null!;
     }
 }
