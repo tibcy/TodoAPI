@@ -78,7 +78,7 @@ public class TodoItemsController : ControllerBase
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Update>
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutTodoItem(long id, TodoItemDTO todoDTO)
+    public async Task<IActionResult> PutTodoItem(long id, TodoItemUpdateDto todoDTO)
     {
         if (id != todoDTO.Id)
         {
@@ -86,13 +86,28 @@ public class TodoItemsController : ControllerBase
         }
 
         var todoItem = await _context.TodoItems.FindAsync(id);
+
         if (todoItem == null)
         {
             return NotFound();
         }
 
+        var priority = await _context.Priorities.FindAsync(todoDTO.PriorityId);
+
+        if (priority == null) {
+            return BadRequest("Invalid PriorityId");
+        }
+
+        var category = await _context.Categories.FindAsync(todoDTO.CategoryId);
+
+        if (category == null) {
+            return BadRequest("Invalid CategoryId");
+        }
+
         todoItem.Name = todoDTO.Name;
         todoItem.IsComplete = todoDTO.IsComplete;
+        todoItem.PriorityId = todoDTO.PriorityId;
+        todoItem.CategoryId = todoDTO.CategoryId;
 
         try
         {
@@ -111,12 +126,26 @@ public class TodoItemsController : ControllerBase
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Create>
     [HttpPost]
-    public async Task<ActionResult<TodoItemDTO>> PostTodoItem(TodoItemDTO todoDTO)
+    public async Task<ActionResult<TodoItemDTO>> PostTodoItem(TodoItemCreateDto todoDTO)
     {
+        var priority = await _context.Priorities.FindAsync(todoDTO.PriorityId);
+        
+        if (priority == null) {
+            return BadRequest("Invalid PriorityId");
+        }
+
+        var category = await _context.Categories.FindAsync(todoDTO.CategoryId);
+
+        if (category == null) {
+            return BadRequest("Invalid CategoryId");
+        }
+
         var todoItem = new TodoItem
         {
             IsComplete = todoDTO.IsComplete,
-            Name = todoDTO.Name
+            Name = todoDTO.Name,
+            PriorityId = todoDTO.PriorityId,
+            CategoryId = todoDTO.CategoryId
         };
 
         _context.TodoItems.Add(todoItem);
