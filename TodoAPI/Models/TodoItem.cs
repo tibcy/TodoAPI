@@ -18,5 +18,14 @@ namespace TodoAPI.Models
         public int? CategoryId { get; set; }
         [ForeignKey("CategoryId")]
         public Category? Category { get; set; }
+
+        public int? UserId { get; set; }
+        [ForeignKey("UserId")]
+        public User? User { get; set; }
+
+        public List<Tag>? Tags { get; set; }
+
+        [InverseProperty("TodoItem")]
+        public List<TodoItemTag>? TodoItemTags { get; set; }
     }
 }

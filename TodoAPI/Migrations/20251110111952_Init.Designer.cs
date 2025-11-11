@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TodoAPI.Models;
 
@@ -10,9 +11,11 @@ using TodoAPI.Models;
 namespace TodoAPI.Migrations
 {
     [DbContext(typeof(TodoContext))]
-    partial class TodoContextModelSnapshot : ModelSnapshot
+    [Migration("20251110111952_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,21 +50,6 @@ namespace TodoAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Priorities");
-                });
-
-            modelBuilder.Entity("TodoAPI.Models.Role", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("TodoAPI.Models.Tag", b =>
@@ -162,32 +150,12 @@ namespace TodoAPI.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("TodoAPI.Models.UserRole", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RoleId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("TodoAPI.Models.TodoItem", b =>
@@ -230,21 +198,6 @@ namespace TodoAPI.Migrations
                     b.Navigation("TodoItem");
                 });
 
-            modelBuilder.Entity("TodoAPI.Models.UserRole", b =>
-                {
-                    b.HasOne("TodoAPI.Models.Role", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId");
-
-                    b.HasOne("TodoAPI.Models.User", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("TodoAPI.Models.Category", b =>
                 {
                     b.Navigation("TodoItems");
@@ -253,11 +206,6 @@ namespace TodoAPI.Migrations
             modelBuilder.Entity("TodoAPI.Models.Priority", b =>
                 {
                     b.Navigation("TodoItems");
-                });
-
-            modelBuilder.Entity("TodoAPI.Models.Role", b =>
-                {
-                    b.Navigation("UserRoles");
                 });
 
             modelBuilder.Entity("TodoAPI.Models.Tag", b =>
@@ -273,8 +221,6 @@ namespace TodoAPI.Migrations
             modelBuilder.Entity("TodoAPI.Models.User", b =>
                 {
                     b.Navigation("TodoItems");
-
-                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }
