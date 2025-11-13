@@ -65,6 +65,29 @@ namespace TodoAPI.Controllers
             };
         }
 
+        [HttpGet("{id}/todos")]
+        public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetUserTodos(int id)
+        {
+            var user = await _context.Users.Include(u => u.TodoItems).FirstOrDefaultAsync(u => u.Id == id);
+            
+            if (user == null)
+            {
+                return NotFound();
+            
+            }
+
+            var todoItems = user.TodoItems.Select(x => new TodoItemDTO
+            {
+                Id = x.Id,
+                Name = x.Name,
+                IsComplete = x.IsComplete,
+                Priority = x.Priority != null ? x.Priority.Name : null,
+                Category = x.Category != null ? x.Category.Name : null
+            });
+
+            return Ok(todoItems);
+        }
+
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
