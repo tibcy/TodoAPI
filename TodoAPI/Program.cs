@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TodoAPI.Models;
+using TodoAPI.Services;
+using TodoAPI.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,8 @@ builder.Services.AddDbContext<TodoContext>(options => {
 
 });
 
+// Add UserService to the DI container
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

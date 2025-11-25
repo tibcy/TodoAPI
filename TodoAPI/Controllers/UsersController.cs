@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoAPI.Dtos;
 using TodoAPI.Models;
+using TodoAPI.Services;
+using TodoAPI.Services.Interfaces;
 
 namespace TodoAPI.Controllers
 {
@@ -15,9 +17,11 @@ namespace TodoAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly TodoContext _context;
+        private readonly IUserService _userService;
 
-        public UsersController(TodoContext context)
+        public UsersController(TodoContext context, IUserService userService)
         {
+            _userService = userService;
             _context = context;
         }
 
@@ -25,19 +29,9 @@ namespace TodoAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserReadDto>>> GetUsers()
         {
-            return await _context.Users.Include(r => r.Roles)
-                .Select(u => new UserReadDto 
-                { 
-                    Id = u.Id,
-                    Name = u.Name,
-                    Email = u.Email,
-                    PasswordHash = u.PasswordHash,
-                    LastLogin = u.LastLogin,
-                    Created = u.Created,
-                    Modified = u.Modified,
-                    Active = u.Active,
-                    Roles = u.Roles
-                }).ToListAsync();
+            var users = await _userService.GetAllUsersAsync();
+
+            return Ok(users);
         }
 
         // GET: api/Users/5
